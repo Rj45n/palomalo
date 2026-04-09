@@ -219,6 +219,9 @@ function parseResourceMonitor(xml: any): any {
   // CPU par groupe fonctionnel (flow_lookup, flow_fastpath, decryption, app-id, content-id…)
   const groups: { name: string; current: number; avg: number }[] = [];
   
+  // Processus DP : pan_task, pan_comm, pan_hdl, etc. par core
+  const dpProcesses: { name: string; core: number; cpu: number; avg: number }[] = [];
+
   for (const dpName of Object.keys(dp)) {
     const minute = dp[dpName]?.minute;
     
@@ -246,7 +249,45 @@ function parseResourceMonitor(xml: any): any {
         groups.push({ name: entry.name || entry.coreid || "unknown", current, avg: Math.round(avg) });
       }
     }
+
+    // Processus DP par task (pan_task_X, pan_comm, pan_hdl, etc.)
+    // Disponible sous resource-monitor/data-processors/dp0/minute/task
+    const taskSection = minute?.task ?? dp[dpName]?.task;
+    if (taskSection?.entry) {
+      const entries = Array.isArray(taskSection.entry) ? taskSection.entry : [taskSection.entry];
+      for (const entry of entries) {
+        const values = String(entry.value ?? entry["cpu-load"] ?? "0")
+          .split(",").map((v: string) => parseFloat(v.trim())).filter(v => !isNaN(v));
+        const current = values[0] ?? 0;
+        const avg = values.length > 0 ? values.reduce((a: number, b: number) => a + b, 0) / values.length : 0;
+        dpProcesses.push({
+          name: entry.name || entry.taskname || entry.coreid || "unknown",
+          core: parseInt(entry.coreid ?? "-1", 10),
+          cpu: current,
+          avg: Math.round(avg),
+        });
+      }
+    }
+
+    // Fallback : certaines versions PAN-OS exposent les tasks sous cpu-load-percent avec un champ "name"
+    // On déduplique avec groups (qui contient déjà ces données sous un autre format)
   }
+
+  // Agréger les processus DP par nom (somme sur tous les cores)
+  const dpProcMap = new Map<string, { name: string; cpu: number; avg: number; cores: number }>();
+  for (const p of dpProcesses) {
+    const existing = dpProcMap.get(p.name);
+    if (existing) {
+      existing.cpu += p.cpu;
+      existing.avg += p.avg;
+      existing.cores += 1;
+    } else {
+      dpProcMap.set(p.name, { name: p.name, cpu: p.cpu, avg: p.avg, cores: 1 });
+    }
+  }
+  const dpProcessesSorted = Array.from(dpProcMap.values())
+    .sort((a, b) => b.cpu - a.cpu)
+    .slice(0, 15);
   
   const activeCores = cores.filter(c => c.current > 0);
   const avgCurrent = activeCores.length > 0 
@@ -258,6 +299,7 @@ function parseResourceMonitor(xml: any): any {
   return {
     cores,
     groups,
+    processes: dpProcessesSorted,
     totalCores: cores.length,
     activeCores: activeCores.length,
     averageCPU: avgCurrent,

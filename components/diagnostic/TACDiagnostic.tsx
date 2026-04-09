@@ -366,6 +366,85 @@ export function TACDiagnostic({ onRefresh }: TACDiagnosticProps) {
         )}
       </div>
 
+      {/* Processus Data Plane */}
+      {(diagnostic.dataPlane?.processes?.length > 0 || diagnostic.dataPlane?.groups?.length > 0) && (
+        <Card className="bg-white/5 backdrop-blur-sm border-white/10 p-6">
+          <h3 className="text-lg font-semibold mb-1 flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-orange-400" />
+            Processus Data Plane
+          </h3>
+          <p className="text-xs text-gray-400 mb-4">
+            Tasks actives sur le(s) Data Processor(s) — pan_task, pan_comm, pan_hdl…
+          </p>
+
+          {diagnostic.dataPlane?.processes?.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {diagnostic.dataPlane.processes.map((proc: any, idx: number) => {
+                const pct = Math.min(proc.cpu, 100);
+                const color = proc.cpu > 50 ? "bg-red-500" : proc.cpu > 20 ? "bg-orange-500" : proc.cpu > 5 ? "bg-yellow-500" : "bg-blue-500";
+                const textColor = proc.cpu > 50 ? "text-red-400" : proc.cpu > 20 ? "text-orange-400" : proc.cpu > 5 ? "text-yellow-400" : "text-blue-400";
+                return (
+                  <div key={idx} className="bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-gray-500 text-xs">{idx + 1}</span>
+                        <span className="font-mono text-sm font-semibold truncate">{proc.name}</span>
+                        {proc.cores > 1 && (
+                          <span className="text-xs text-gray-500 shrink-0">×{proc.cores} cores</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <span className={`font-bold text-sm ${textColor}`}>{proc.cpu.toFixed(1)}%</span>
+                        <span className="text-gray-500 text-xs">moy {proc.avg}%</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* Fallback : afficher les groupes fonctionnels si pas de tasks individuelles */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {diagnostic.dataPlane.groups.map((g: any, idx: number) => {
+                const pct = Math.min(g.current, 100);
+                const color = g.current > 50 ? "bg-red-500" : g.current > 20 ? "bg-orange-500" : g.current > 5 ? "bg-yellow-500" : "bg-cyan-500";
+                const textColor = g.current > 50 ? "text-red-400" : g.current > 20 ? "text-orange-400" : g.current > 5 ? "text-yellow-400" : "text-cyan-400";
+                return (
+                  <div key={idx} className="bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-sm font-semibold truncate">{g.name}</span>
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <span className={`font-bold text-sm ${textColor}`}>{g.current.toFixed(1)}%</span>
+                        <span className="text-gray-500 text-xs">moy {g.avg}%</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Légende des processus connus */}
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-xs text-gray-500 mb-2 font-semibold">Référence des processus DP :</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-1 text-xs text-gray-500">
+              <span><code className="text-gray-400">pan_task</code> — traitement des paquets</span>
+              <span><code className="text-gray-400">pan_comm</code> — communication MP↔DP</span>
+              <span><code className="text-gray-400">pan_hdl</code> — gestion des handles</span>
+              <span><code className="text-gray-400">flow_lookup</code> — lookup de session</span>
+              <span><code className="text-gray-400">app-id</code> — identification applicative</span>
+              <span><code className="text-gray-400">content-id</code> — inspection de contenu</span>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Sessions détaillées */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Répartition des sessions */}
