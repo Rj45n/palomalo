@@ -80,3 +80,13 @@ pids
 tmp/
 temp/
 *.tmp
+
+# Fichiers de documentation internes (garder uniquement README.md)
+/*.md
+!README.md
+/docs/
+
+# Fichiers de test
+test-*.js
+test-*.tgz
+*.test.js
