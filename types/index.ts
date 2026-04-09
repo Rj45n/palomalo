@@ -705,6 +705,24 @@ export interface AlertConfig {
   rules: AlertRule[];
 }
 
+// ─── Gestion des utilisateurs ────────────────────────────────────────────────
+
+export type UserRole = "admin" | "operator" | "viewer";
+
+export interface AppUser {
+  id: string;
+  username: string;
+  email: string;
+  passwordHash: string;       // bcrypt — jamais exposé côté client
+  role: UserRole;
+  createdAt: string;
+  lastLoginAt?: string;
+  provider?: "credentials" | "keycloak" | "oidc";
+}
+
+// Version sans le hash, envoyée au client
+export type AppUserSafe = Omit<AppUser, "passwordHash">;
+
 // ─── Multi-firewall Fleet ─────────────────────────────────────────────────────
 
 export type FirewallStatus = "online" | "offline" | "degraded" | "unknown";
