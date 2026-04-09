@@ -12,8 +12,11 @@ import {
   getResourceMonitorIngress,
   getSessionStats,
 } from "@/lib/panos";
+import { buildRecord, saveRecord } from "@/lib/diagnostic-history";
+import { evaluateAndFireAlerts } from "@/lib/alert-engine";
 
 export async function GET() {
+  const startTime = Date.now();
   try {
     const cookieStore = await cookies();
 
@@ -124,13 +127,19 @@ export async function GET() {
 
     // Analyser et détecter les problèmes
     const issues = analyzeAndDetectIssues(diagnostic);
+    const healthScore = calculateHealthScore(issues);
 
     console.log(`✅ Diagnostic terminé: ${issues.length} problèmes détectés`);
+
+    // Sauvegarder dans l'historique et évaluer les alertes (non-bloquant)
+    const record = buildRecord({ ...diagnostic, issues, healthScore }, Date.now() - startTime);
+    saveRecord(record).catch(e => console.error("Erreur sauvegarde historique:", e));
+    evaluateAndFireAlerts(record).catch(e => console.error("Erreur évaluation alertes:", e));
 
     return NextResponse.json({
       ...diagnostic,
       issues,
-      healthScore: calculateHealthScore(issues),
+      healthScore,
     });
   } catch (error) {
     console.error("❌ Erreur diagnostic:", error);

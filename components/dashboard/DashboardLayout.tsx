@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   X,
+  History,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -30,6 +32,8 @@ const menuItems = [
   { id: "security",    label: "Security",    icon: Shield,          path: "/dashboard/security" },
   { id: "hardware",    label: "Hardware",    icon: HardDrive,       path: "/dashboard/hardware" },
   { id: "diagnostics", label: "Diagnostics", icon: Stethoscope,     path: "/dashboard/diagnostics" },
+  { id: "history",     label: "Historique",  icon: History,         path: "/dashboard/history" },
+  { id: "alerts",      label: "Alertes",     icon: Bell,            path: "/dashboard/alerts" },
 ];
 
 export default function DashboardLayout({

@@ -647,3 +647,60 @@ export interface TSFAnalysisComplete {
   recommendations: string[];
   parseErrors?: string[];
 }
+
+// ─── Historique des diagnostics ───────────────────────────────────────────────
+
+export interface DiagnosticRecord {
+  id: string;
+  timestamp: string;
+  hostname: string;
+  model: string;
+  version: string;
+  healthScore: number;
+  issueCount: { critical: number; major: number; warning: number; info: number };
+  issues: Array<{
+    id: string;
+    severity: "critical" | "major" | "warning" | "info";
+    category: string;
+    title: string;
+    description: string;
+    recommendation: string;
+  }>;
+  metrics: {
+    dpCpuAvg: number;
+    dpCpuMax: number;
+    mpCpu: number;
+    memoryPct: number;
+    sessionUtilPct: number;
+    packetRate: number;
+    totalDrops: number;
+  };
+  durationMs: number;
+}
+
+// ─── Configuration des alertes ────────────────────────────────────────────────
+
+export interface AlertRule {
+  id: string;
+  name: string;
+  enabled: boolean;
+  condition: "gt" | "lt" | "eq";
+  metric: "dpCpuAvg" | "dpCpuMax" | "mpCpu" | "memoryPct" | "sessionUtilPct" | "totalDrops" | "healthScore";
+  threshold: number;
+  severity: "critical" | "major" | "warning";
+  cooldownMinutes: number;
+  lastFiredAt?: string;
+}
+
+export interface AlertConfig {
+  webhookUrl?: string;
+  webhookEnabled: boolean;
+  emailTo?: string;
+  emailFrom?: string;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  emailEnabled: boolean;
+  rules: AlertRule[];
+}

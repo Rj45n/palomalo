@@ -91,3 +91,6 @@ temp/
 test-*.js
 test-*.tgz
 *.test.js
+
+# Données persistantes locales
+/data/*.json

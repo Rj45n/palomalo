@@ -254,11 +254,11 @@ node test-interface-metrics.js
 - ✅ Diagnostic IA
 - ✅ Upload et parsing TSF
 
-### Version 1.1 (En cours)
-- [x] Graphiques d'interfaces individuelles
-- [ ] Export PDF des rapports de diagnostic
-- [ ] Historique des diagnostics
-- [ ] Alertes par email/webhook
+### Version 1.1 ✅ Complète
+- [x] Graphiques d'interfaces individuelles (temps réel RX/TX, drops, errors)
+- [x] Export PDF des rapports de diagnostic
+- [x] Historique des diagnostics (persistant, paginé, suppression)
+- [x] Alertes par webhook (Slack / Teams / custom HTTP)
 
 ### Version 2.0 (Future)
 - [ ] Support multi-firewall

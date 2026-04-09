@@ -7,6 +7,26 @@ versionnage selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.5.0] - 2026-04-09
+
+### Ajouté
+- **Historique des diagnostics** (`/dashboard/history`) : liste paginée de tous les diagnostics TAC passés avec health score, compteurs d'issues, hostname, modèle et version PAN-OS
+- **Page détail historique** (`/dashboard/history/[id]`) : métriques clés, liste complète des problèmes détectés, bouton export PDF
+- **Export PDF** (`/api/diagnostic/export-pdf`) : rapport PDF généré côté serveur via `@react-pdf/renderer` — header, métriques, liste des issues avec couleurs par sévérité, footer paginé
+- **Persistance automatique** : chaque diagnostic TAC lancé est automatiquement sauvegardé dans `data/diagnostic-history.json` (max 100 entrées FIFO)
+- **Moteur d'alertes** (`lib/alert-engine.ts`) : évaluation des seuils sur chaque diagnostic, envoi de webhook HTTP compatible Slack/Teams/custom
+- **Configuration des alertes** (`/dashboard/alerts`) : 6 règles préconfigurées (DP CPU critique/élevé, mémoire, sessions, health score, drops) avec toggle, seuil modifiable, cooldown, test webhook en direct
+- **API alertes** : `GET/POST /api/alerts/config` et `POST /api/alerts/test`
+- **Sidebar** : ajout des liens "Historique" et "Alertes"
+- **Bouton PDF** dans `TACDiagnostic` : accès rapide à l'historique pour export
+
+### Technique
+- Nouveaux types TypeScript : `DiagnosticRecord`, `AlertRule`, `AlertConfig`
+- Dossier `data/` pour le stockage persistant JSON (gitignored)
+- Fix TypeScript : `Buffer` → `BodyInit` pour la réponse PDF
+
+---
+
 ## [1.4.0] - 2026-04-09
 
 ### Ajouté

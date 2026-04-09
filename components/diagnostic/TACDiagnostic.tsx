@@ -7,7 +7,7 @@ import {
   Cpu, HardDrive, Network, AlertTriangle, 
   CheckCircle, RefreshCw, Server, Shield, Globe,
   TrendingUp, Users, Zap, AlertCircle, Flame, Activity,
-  BarChart2, Clock
+  BarChart2, Clock, Download
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -96,6 +96,19 @@ export function TACDiagnostic({ onRefresh }: TACDiagnosticProps) {
           </div>
           <Button onClick={loadDiagnostic} variant="outline" size="icon">
             <RefreshCw className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // L'ID du record est construit dans diagnostic-live et sauvegardé en historique
+              // On redirige vers la page historique pour télécharger le dernier rapport
+              window.open("/dashboard/history", "_blank");
+            }}
+            title="Voir l'historique pour exporter en PDF"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            PDF
           </Button>
         </div>
       </div>
