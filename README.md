@@ -73,8 +73,8 @@ PaloDiag est une plateforme web moderne et intuitive conçue pour les ingénieur
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-username/palodiag.git
-cd palodiag
+git clone https://github.com/Rj45n/palomalo.git
+cd palomalo
 
 # Installer les dépendances
 npm install
@@ -297,7 +297,7 @@ Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
 
 ## 👥 Auteurs
 
-- **Votre Nom** - *Initial work* - [@votre-username](https://github.com/votre-username)
+- **Romain Jean** - *Initial work* - [@Rj45n](https://github.com/Rj45n)
 
 ---
 
@@ -311,9 +311,8 @@ Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
 
 ## 📞 Support
 
-- 📧 Email : support@palodiag.com
-- 💬 Discord : [Rejoindre le serveur](https://discord.gg/palodiag)
-- 🐛 Issues : [GitHub Issues](https://github.com/votre-username/palodiag/issues)
+- 📧 Email : [romain.jean@rj45.cloud](mailto:romain.jean@rj45.cloud)
+- 🐛 Issues : [GitHub Issues](https://github.com/Rj45n/palomalo/issues)
 
 ---
 
