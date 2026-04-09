@@ -285,7 +285,7 @@ Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](docs/contrib
 
 ## 📝 Changelog
 
-Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique des versions.
+Voir [CHANGELOG.md](https://github.com/Rj45n/palomalo/blob/main/CHANGELOG.md) pour l'historique complet des versions.
 
 ---
 

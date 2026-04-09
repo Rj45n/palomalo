@@ -81,9 +81,10 @@ tmp/
 temp/
 *.tmp
 
-# Fichiers de documentation internes (garder uniquement README.md)
+# Fichiers de documentation internes (garder uniquement README.md et CHANGELOG.md)
 /*.md
 !README.md
+!CHANGELOG.md
 /docs/
 
 # Fichiers de test
