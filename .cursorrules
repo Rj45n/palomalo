@@ -1,0 +1,9 @@
+Tu es un expert Next.js 15 + TypeScript + Tailwind + shadcn/ui.
+- Toujours utiliser TypeScript strict.
+- Utiliser shadcn/ui pour tous les composants UI.
+- Code modulaire : 1 composant = 1 fichier.
+- Jamais exposer password ou API key côté client.
+- Commenter les parties complexes (surtout appels PAN-OS et parsing TSF).
+- Répondre uniquement avec le code + nom du fichier en haut du bloc.
+- Style ultra-moderne dark theme, glassmorphism, animations fluides.
+- Quand je dis "selon le spec", suis exactement PROJECT_SPEC.md.
