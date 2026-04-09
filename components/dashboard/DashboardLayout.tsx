@@ -9,6 +9,7 @@ import {
   Shield,
   HardDrive,
   Stethoscope,
+  Network,
   RefreshCw,
   LogOut,
   Menu,
@@ -23,11 +24,12 @@ interface DashboardLayoutProps {
 }
 
 const menuItems = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard, path: "/dashboard" },
-  { id: "performance", label: "Performance", icon: Activity, path: "/dashboard/performance" },
-  { id: "security", label: "Security", icon: Shield, path: "/dashboard/security" },
-  { id: "hardware", label: "Hardware", icon: HardDrive, path: "/dashboard/hardware" },
-  { id: "diagnostics", label: "Diagnostics", icon: Stethoscope, path: "/dashboard/diagnostics" },
+  { id: "overview",    label: "Overview",    icon: LayoutDashboard, path: "/dashboard" },
+  { id: "performance", label: "Performance", icon: Activity,        path: "/dashboard/performance" },
+  { id: "interfaces",  label: "Interfaces",  icon: Network,         path: "/dashboard/interfaces" },
+  { id: "security",    label: "Security",    icon: Shield,          path: "/dashboard/security" },
+  { id: "hardware",    label: "Hardware",    icon: HardDrive,       path: "/dashboard/hardware" },
+  { id: "diagnostics", label: "Diagnostics", icon: Stethoscope,     path: "/dashboard/diagnostics" },
 ];
 
 export default function DashboardLayout({

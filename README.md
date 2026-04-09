@@ -254,8 +254,8 @@ node test-interface-metrics.js
 - ✅ Diagnostic IA
 - ✅ Upload et parsing TSF
 
-### Version 1.1 (Prochaine)
-- [ ] Graphiques d'interfaces individuelles
+### Version 1.1 (En cours)
+- [x] Graphiques d'interfaces individuelles
 - [ ] Export PDF des rapports de diagnostic
 - [ ] Historique des diagnostics
 - [ ] Alertes par email/webhook

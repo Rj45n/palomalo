@@ -7,6 +7,23 @@ versionnage selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.4.0] - 2026-04-09
+
+### Ajouté
+- **Page Interfaces** (`/dashboard/interfaces`) : grille de toutes les interfaces avec statut, sparkline RX, débit estimé, badges d'alertes (errors/drops), filtres (all/up/down/problèmes) et barre de recherche
+- **Page détail interface** (`/dashboard/interfaces/[name]`) : graphiques temps réel avec polling toutes les 5s
+  - Débit RX/TX en Kbps (AreaChart avec gradient)
+  - Packets par seconde RX/TX (LineChart)
+  - Drops & Errors RX/TX (LineChart multi-séries)
+  - 4 cartes de résumé avec tendance (hausse/baisse)
+  - Bouton Pause/Reprendre le polling
+- **API `/api/interfaces/history`** : ring buffer en mémoire (60 points = ~5 min) avec calcul des débits par delta entre snapshots
+- **Composant `SparklineChart`** : mini graphique AreaChart sans axes pour les cartes d'interface
+- **Sidebar** : ajout du lien "Interfaces" avec icône Network
+- **Tableau InterfacesTableEnhanced** : noms d'interfaces cliquables vers la page de détail
+
+---
+
 ## [1.3.0] - 2026-04-09
 
 ### Ajouté

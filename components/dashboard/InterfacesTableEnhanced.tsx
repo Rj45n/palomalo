@@ -1,6 +1,7 @@
 "use client";
 
-import { Network, ArrowUp, ArrowDown, AlertTriangle, AlertCircle, Activity } from "lucide-react";
+import Link from "next/link";
+import { Network, ArrowUp, ArrowDown, AlertTriangle, AlertCircle, Activity, ChevronRight } from "lucide-react";
 import { InterfaceStats } from "@/types";
 
 interface InterfacesTableEnhancedProps {
@@ -128,12 +129,18 @@ export default function InterfacesTableEnhanced({ interfaces }: InterfacesTableE
             {interfaces.map((iface, index) => (
               <tr
                 key={index}
-                className={`border-b border-white/5 hover:bg-white/5 transition-colors ${getAlertColor(
-                  iface
-                )}`}
+                className={`border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${getAlertColor(iface)}`}
               >
-                {/* Interface Name */}
-                <td className="py-3 px-4 font-medium">{iface.name}</td>
+                {/* Interface Name — cliquable vers le détail */}
+                <td className="py-3 px-4 font-medium">
+                  <Link
+                    href={`/dashboard/interfaces/${encodeURIComponent(iface.name)}`}
+                    className="flex items-center gap-1 hover:text-blue-400 transition-colors group"
+                  >
+                    {iface.name}
+                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                </td>
 
                 {/* Status */}
                 <td className="py-3 px-4">
