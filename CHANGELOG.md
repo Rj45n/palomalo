@@ -7,6 +7,25 @@ versionnage selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [2.0.0] - 2026-04-09
+
+### Ajouté
+- **Fleet multi-firewall** (`/dashboard/fleet`) : tableau de bord centralisé pour gérer et surveiller plusieurs firewalls Palo Alto simultanément
+  - Ajout / modification / suppression de firewalls (label, URL, credentials, tags)
+  - Collecte des métriques en un clic par firewall ou pour toute la flotte (`/api/fleet/poll`)
+  - Résumé global : total, en ligne, dégradés, hors ligne, health score moyen
+  - Cartes par firewall : status, DP CPU, mémoire, sessions, issues critiques, barre de santé
+  - Page détail par firewall (`/dashboard/fleet/[id]`) avec métriques complètes et gestion des erreurs
+- **API Fleet** : `GET/POST /api/fleet`, `GET/PATCH/DELETE /api/fleet/[id]`, `GET/POST /api/fleet/[id]/metrics`, `POST /api/fleet/poll`
+- **Persistance** : `data/fleet.json` (firewalls) + `data/fleet-snapshots.json` (derniers snapshots)
+- **Sidebar** : ajout du lien "Fleet" avec icône Server
+- **Nouveaux types** : `FirewallEntry`, `FirewallEntrySafe`, `FirewallSnapshot`, `FleetSummary`, `FirewallStatus`
+
+### Sécurité
+- Les mots de passe des firewalls de la flotte ne sont jamais exposés côté client (`FirewallEntrySafe`)
+
+---
+
 ## [1.5.0] - 2026-04-09
 
 ### Ajouté

@@ -704,3 +704,53 @@ export interface AlertConfig {
   emailEnabled: boolean;
   rules: AlertRule[];
 }
+
+// ─── Multi-firewall Fleet ─────────────────────────────────────────────────────
+
+export type FirewallStatus = "online" | "offline" | "degraded" | "unknown";
+
+export interface FirewallEntry {
+  id: string;              // UUID local
+  label: string;           // Nom affiché (ex: "FW-Paris-01")
+  url: string;             // https://192.168.1.1
+  username: string;
+  password: string;        // Stocké côté serveur uniquement, jamais envoyé au client
+  addedAt: string;         // ISO 8601
+  lastSeenAt?: string;
+  status: FirewallStatus;
+  tags?: string[];         // ex: ["prod", "paris", "edge"]
+}
+
+// Version sans le mot de passe, envoyée au client
+export type FirewallEntrySafe = Omit<FirewallEntry, "password">;
+
+export interface FirewallSnapshot {
+  firewallId: string;
+  collectedAt: string;
+  status: FirewallStatus;
+  hostname: string;
+  model: string;
+  version: string;
+  uptime: string;
+  healthScore: number;
+  dpCpuAvg: number;
+  mpCpu: number;
+  memoryPct: number;
+  sessionUtilPct: number;
+  sessionCount: number;
+  interfacesDown: number;
+  criticalIssues: number;
+  majorIssues: number;
+  error?: string;          // Message d'erreur si la collecte a échoué
+}
+
+export interface FleetSummary {
+  total: number;
+  online: number;
+  offline: number;
+  degraded: number;
+  avgHealthScore: number;
+  criticalCount: number;
+  firewalls: FirewallEntrySafe[];
+  snapshots: Record<string, FirewallSnapshot>;
+}

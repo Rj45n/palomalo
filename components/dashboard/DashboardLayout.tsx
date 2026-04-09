@@ -16,6 +16,7 @@ import {
   X,
   History,
   Bell,
+  Server,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +28,7 @@ interface DashboardLayoutProps {
 
 const menuItems = [
   { id: "overview",    label: "Overview",    icon: LayoutDashboard, path: "/dashboard" },
+  { id: "fleet",       label: "Fleet",       icon: Server,          path: "/dashboard/fleet" },
   { id: "performance", label: "Performance", icon: Activity,        path: "/dashboard/performance" },
   { id: "interfaces",  label: "Interfaces",  icon: Network,         path: "/dashboard/interfaces" },
   { id: "security",    label: "Security",    icon: Shield,          path: "/dashboard/security" },
