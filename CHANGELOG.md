@@ -7,6 +7,35 @@ versionnage selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [2.1.0] - 2026-04-09
+
+### Ajouté
+- **Authentification applicative** (`/login`) : page de connexion dédiée à PaloMalo (séparée des credentials PAN-OS)
+  - Formulaire username/password avec bcrypt (cost 12)
+  - Bouton "Se connecter avec Keycloak" (activé via variables d'environnement)
+  - Compte admin par défaut : `admin` / `PaloMalo@2024`
+- **Gestion des utilisateurs** (`/dashboard/users`) : interface admin pour créer, modifier, supprimer des comptes
+  - Trois rôles : `admin` (accès complet), `operator` (lecture/écriture), `viewer` (lecture seule)
+  - Protection contre la suppression du dernier administrateur et l'auto-suppression
+- **Middleware de protection** : toutes les routes `/dashboard/*` et `/api/*` nécessitent une session valide
+  - Redirection automatique vers `/login` si non authentifié
+  - Contrôle d'accès par rôle (admin-only, operator+, viewer)
+- **Intégration Keycloak / OAuth2** : provider OIDC configurable via `.env.local`
+  - Mapping automatique des rôles Keycloak (`palomalo-admin` → admin, `palomalo-operator` → operator)
+  - Compatible avec tout provider OAuth2 (Azure AD, Google, GitHub…)
+- **Sidebar enrichie** : profil utilisateur avec badge de rôle, menu déroulant, déconnexion NextAuth
+- **API utilisateurs** : `GET/POST /api/users`, `GET/PATCH/DELETE /api/users/[id]`
+- **Persistance** : `data/users.json` (hashé bcrypt, jamais exposé côté client)
+
+### Technique
+- NextAuth v5 (Auth.js) avec stratégie JWT
+- `lib/auth.ts` : configuration providers + callbacks rôles
+- `lib/user-store.ts` : CRUD JSON + bcrypt
+- Nouveaux types : `AppUser`, `AppUserSafe`, `UserRole`
+- `SessionProvider` dans le layout root
+
+---
+
 ## [2.0.0] - 2026-04-09
 
 ### Ajouté

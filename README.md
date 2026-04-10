@@ -13,7 +13,19 @@ PaloMalo est une plateforme web moderne conçue pour les ingénieurs réseau, le
 
 ## ✨ Fonctionnalités
 
-### 🔐 Connexion Sécurisée
+### 🔑 Authentification Applicative
+- **Page de login** (`/login`) : connexion à PaloMalo avant tout accès au dashboard
+- **Credentials locaux** : username/password hashé bcrypt (cost 12), stocké dans `data/users.json`
+- **Keycloak / OAuth2** : SSO via OIDC, activé par variables d'environnement
+- **Rôles** :
+  - `admin` — accès complet + gestion des utilisateurs
+  - `operator` — diagnostics, Fleet, alertes, lecture/écriture
+  - `viewer` — lecture seule (overview, interfaces, historique)
+- **Compte par défaut** : `admin` / `PaloMalo@2024` (à changer en production)
+- **Middleware** : protection automatique de toutes les routes `/dashboard/*` et `/api/*`
+- **Gestion des utilisateurs** (`/dashboard/users`) : créer, modifier, supprimer des comptes (admin uniquement)
+
+### 🔐 Connexion Firewall (PAN-OS)
 - Authentification via API PAN-OS (keygen)
 - Credentials stockés dans cookies HTTP-only (jamais exposés côté client)
 - Support des certificats auto-signés
@@ -100,43 +112,61 @@ npm run build
 npm start
 ```
 
+### Configuration Keycloak (optionnel)
+
+Décommenter dans `.env.local` :
+
+```bash
+AUTH_KEYCLOAK_ID=palomalo
+AUTH_KEYCLOAK_SECRET=<client-secret>
+AUTH_KEYCLOAK_ISSUER=https://keycloak.example.com/realms/palomalo
+NEXT_PUBLIC_KEYCLOAK_ENABLED=true
+```
+
+Créer les rôles dans Keycloak : `palomalo-admin`, `palomalo-operator` (les utilisateurs sans ces rôles obtiennent `viewer`).
+
 ---
 
 ## 📖 Utilisation
 
-### 1. Connexion au Firewall
+### 1. Connexion à PaloMalo
 
-1. Accédez à `http://localhost:3000`
-2. Entrez l'URL/IP du firewall, votre username et password
-3. Cliquez sur **Se connecter**
+1. Accédez à `http://localhost:3000` → redirigé vers `/login`
+2. Connectez-vous avec `admin` / `PaloMalo@2024` (ou via Keycloak si configuré)
+3. Changez le mot de passe admin depuis **Utilisateurs** → modifier
 
-### 2. Dashboard Principal
+### 2. Connexion au Firewall
+
+1. Depuis le dashboard, entrez l'URL/IP du firewall, votre username et password PAN-OS
+2. Cliquez sur **Se connecter**
+
+### 4. Dashboard Principal
 
 - **Cartes métriques** : CPU, Memory, Sessions, Interfaces
 - **Graphiques** : CPU/Memory historique, Sessions actives
 - **Table des interfaces** avec détection automatique de problèmes (cliquable → détail)
 
-### 3. Diagnostic TAC
+### 5. Diagnostic TAC
 
 1. Naviguez vers **Diagnostics** dans la sidebar
 2. Cliquez sur **Lancer le diagnostic**
 3. Le diagnostic est automatiquement sauvegardé dans l'historique
 4. Les alertes webhook sont déclenchées si des seuils sont dépassés
 
-### 4. Historique & Export PDF
+### 6. Historique & Export PDF
 
 1. Naviguez vers **Historique** dans la sidebar
 2. Cliquez sur un diagnostic pour voir le détail
 3. Cliquez sur **Exporter PDF** pour télécharger le rapport
 
-### 5. Configuration des Alertes
+### 7. Configuration des Alertes
 
 1. Naviguez vers **Alertes** dans la sidebar
 2. Entrez l'URL de votre webhook Slack/Teams
 3. Activez les règles souhaitées et ajustez les seuils
 4. Cliquez sur **Tester** pour valider la configuration
 
-### 6. Upload TSF
+### 8. Upload TSF
 
 1. Naviguez vers **Diagnostics** → section TSF
 2. Glissez-déposez votre fichier `.tgz`
@@ -188,11 +218,18 @@ PaloMalo/
 │   ├── diagnostic-history.ts         # Persistance JSON
 │   ├── alert-config.ts               # Config alertes
 │   ├── alert-engine.ts               # Moteur d'alertes
-│   └── pdf-generator.ts              # Génération PDF
+│   ├── pdf-generator.ts              # Génération PDF
+│   ├── fleet-store.ts                # Gestion flotte firewalls
+│   ├── auth.ts                       # NextAuth v5 (Credentials + Keycloak)
+│   └── user-store.ts                 # CRUD utilisateurs + bcrypt
+├── middleware.ts                     # Protection routes + RBAC
 ├── types/index.ts                    # Types TypeScript
 └── data/                             # Stockage JSON local (gitignored)
     ├── diagnostic-history.json
-    └── alert-config.json
+    ├── alert-config.json
+    ├── fleet.json
+    ├── fleet-snapshots.json
+    └── users.json
 ```
 
 ---
@@ -207,6 +244,8 @@ PaloMalo/
 | Animations | [Framer Motion](https://www.framer.com/motion/) |
 | Charts | [Recharts](https://recharts.org/) |
 | PDF | [@react-pdf/renderer](https://react-pdf.org/) |
+| Auth | [NextAuth v5 (Auth.js)](https://authjs.dev/) |
+| Crypto | [bcryptjs](https://github.com/dcodeIO/bcrypt.js) |
 | XML | [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js) |
 | TSF | [tar-stream](https://github.com/mafintosh/tar-stream) |
 
@@ -214,12 +253,15 @@ PaloMalo/
 
 ## 🔒 Sécurité
 
-- ✅ Credentials jamais exposés côté client
-- ✅ Clé API stockée dans cookie HTTP-only
-- ✅ Mot de passe SMTP masqué côté client (`••••••`)
-- ✅ Validation des inputs côté serveur
-- ✅ Protection CSRF avec SameSite=strict
-- ✅ HTTPS requis en production
+- ✅ **Authentification applicative** : session JWT NextAuth, toutes les routes protégées
+- ✅ **RBAC** : contrôle d'accès par rôle (admin / operator / viewer) au niveau middleware
+- ✅ **Mots de passe hashés** : bcrypt cost 12, jamais stockés en clair
+- ✅ **Credentials PAN-OS** jamais exposés côté client (cookie HTTP-only)
+- ✅ **Credentials Fleet** : mots de passe des firewalls jamais renvoyés au client (`FirewallEntrySafe`)
+- ✅ **Mot de passe SMTP** masqué côté client (`••••••`)
+- ✅ **Validation des inputs** côté serveur sur toutes les API
+- ✅ **Protection CSRF** avec SameSite=strict
+- ✅ **HTTPS requis** en production (`AUTH_URL` à configurer)
 
 ---
 
@@ -237,6 +279,7 @@ PaloMalo/
 
 ### v2.0 ✅
 - [x] Support multi-firewall (Fleet — tableau de bord centralisé)
+- [x] Authentification applicative (NextAuth v5, Keycloak/OAuth2, gestion des utilisateurs)
 - [ ] Comparaison de configurations entre deux firewalls
 - [ ] Analyse de trafic (Application-ID, Top Talkers)
 - [ ] Intégration Panorama
